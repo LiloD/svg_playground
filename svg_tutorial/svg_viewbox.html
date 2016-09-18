@@ -1,0 +1,42 @@
+<!doctype html>
+    <head>
+        <title>svg tutorial</title>
+    </head>
+    <body>
+        <h1>SVG change viewbox</h1>
+        
+        <div>
+            <button onclick="zoomIn()">Zoom In</button>
+            <button onclick="zoomOut()">Zoom Out</button>
+        </div>
+
+        <svg id="canvas" width="600" height="600" version="1.1"
+             viewbox="0 0 600 600"
+             xmlns="http://www.w3.org/2000/svg"
+             xmlns:xlink="http://www.w3.org/1999/xlink">
+
+             <rect x="0" y="0" width="100" height="200"></rect>
+        </svg>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script type="text/javascript">
+            var scale = 1;
+            var originViewBox = $('#canvas').attr('viewBox').split(' ');
+
+            function zoom(id, level){
+                var newViewBox = [0, 0, originViewBox[2]/level, originViewBox[3]/level].join(' ');
+                $(id).attr('viewBox', newViewBox);
+            }
+
+            function zoomIn(){
+                scale++;
+                zoom('#canvas', scale);
+            }
+
+            function zoomOut(){
+                scale--;
+                if(scale <= 0) scale = 1;
+                zoom('#canvas', scale);
+            }
+        </script>
+    </body>
+</html>
