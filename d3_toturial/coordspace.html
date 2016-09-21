@@ -1,0 +1,35 @@
+<!doctype html>
+    <head>
+        <title>D3 Project 1 - coordinate space</title>
+    </head>
+    <body>
+        <script type="text/javascript" src="../node_modules/d3/build/d3.min.js"></script>
+        <script type="text/javascript">
+            var bodySelection = d3.select('body');
+            var svgSelection = bodySelection.append('svg')
+                                    .attr('width', 500)
+                                    .attr('height', 500)
+                                    .style("border", "1px solid black");
+
+            var spaceCircle = [60, 150, 250];
+
+            var circles = svgSelection.selectAll('circle')
+                                        .data(spaceCircle)
+                                        .enter()
+                                        .append('circle');
+            circles.attr('cx', function(d){return d;})
+                    .attr('cy', function(d){return d;})
+                    .attr('r', 50)
+                    .style('fill', function(d){
+                        if(d === 60){
+                            return 'red';
+                        }else if(d === 150){
+                            return 'blue';
+                        }else{
+                            return 'green'
+                        }
+                    });
+            
+        </script>
+    </body>
+</html>

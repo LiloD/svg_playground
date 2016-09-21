@@ -1,0 +1,42 @@
+<!doctype html>
+    <head>
+        <title>D3 Project 1 - Path generator</title>
+    </head>
+    <body>
+        <script type="text/javascript" src="../node_modules/d3/build/d3.min.js"></script>
+        <script type="text/javascript">
+            var bodySelection = d3.select('body');
+            var svgSelection = bodySelection.append('svg')
+                                    .attr('width', 500)
+                                    .attr('height', 500)
+                                    .style("border", "1px solid black");
+
+            var lineData = [ { "x": 1,   "y": 5},  { "x": 20,  "y": 20},
+                     { "x": 40,  "y": 10}, { "x": 60,  "y": 40},
+                     { "x": 80,  "y": 5},  { "x": 100, "y": 60}];
+            
+            var linearLineFunc = d3.line()
+                                .x(function(d){ return d.x; })
+                                .y(function(d){ return d.y; });
+
+            var basisLineFunc = d3.line()
+                                .x(function(d){ return d.x; })
+                                .y(function(d){ return d.y; })
+                                .curve(d3.curveCatmullRom.alpha(1.5));
+                                // .curve();
+
+            svgSelection.append('path')
+                        .attr('d', linearLineFunc(lineData))
+                        .attr('stroke', 'blue')
+                        .attr('stroke-width', 2)
+                        .attr('fill', 'none');
+
+            svgSelection.append('path')
+                        .attr('d', basisLineFunc(lineData))
+                        .attr('stroke', 'purple')
+                        .attr('stroke-width', 2)
+                        .attr('fill', 'none');
+            
+        </script>
+    </body>
+</html>
