@@ -1,0 +1,87 @@
+<!doctype html>
+    <head>
+        <title>SVG transform matrix</title>
+        <style>
+           
+        </style>
+    </head>
+    <body>
+        <h1>SVG - transform matrix</h1>
+        <div>
+            <button onclick="goLeft()">left</button>
+            <button onclick="scale()">scale</button>
+        </div>
+
+        <div class="svg-container">
+            <svg version="1.1" width="500" height="500" viewBox="0 0 500 500" preserveAspectRatio="xMinYMin meet" class="svg-content">
+                <circle fill="#F7941E" stroke="#231F20" stroke-width="10" stroke-miterlimit="2" cx="250" cy="250" r="50" opacity="0.6" />
+            </svg>
+        </div>
+
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script type="text/javascript" src="../node_modules/d3/build/d3.min.js"></script>
+        <script type="text/javascript">
+            function product(m1, m2){
+                var i, j;
+                var res = [[0, 0, 0], [0, 0, 0], [0, 0, 1]];
+
+                for(i = 0; i < 3; i++){
+                    for(j = 0; j < 3; ++j){
+                        res[i][j] = m1[i][0] * m2[0][j] +
+                                    m1[i][1] * m2[1][j] +
+                                    m1[i][2] * m2[2][j];
+                    }
+                }
+                return res;
+            }
+
+
+            function SVGMatrix(){
+                this.matrix = [[1, 0, 0], 
+                            [0, 1, 0], 
+                            [0, 0, 1]];
+            }
+
+            SVGMatrix.prototype.translate = function(x, y){
+                var m = [[1, 0, x],
+                        [0, 1, y],
+                        [0, 0, 1]]
+                this.matrix = product(this.matrix, m);
+                return this;
+            }
+
+            SVGMatrix.prototype.scale = function(s){
+                var m = [[s, 0, 0],
+                        [0, s, 0],
+                        [0, 0, 1]]
+                this.matrix = product(this.matrix, m);
+                return this;
+            }
+
+            SVGMatrix.prototype.getString = function(){
+                var arr = [this.matrix[0][0], this.matrix[1][0], this.matrix[0][1], 
+                           this.matrix[1][1], this.matrix[0][2], this.matrix[1][2]];
+
+                return 'matrix('+arr.join(',')+')';
+            }
+
+            var cmt = new SVGMatrix();
+            var circle = d3.select('svg').select('circle');
+            console.log('circle:', circle);
+            circle.style('transition', 'transform 1000ms linear');
+
+            function goLeft(){
+                // cmt.scale(2);
+                cmt.translate(70, 0);
+                circle.style('transform', cmt.getString());
+            }
+
+            function scale(){
+                // cmt.scale(2);
+                // cmt.translate(30, 0);
+                // circle.style('transform', 'scale(2)');
+            }
+            
+        </script>
+    </body>
+</html>
