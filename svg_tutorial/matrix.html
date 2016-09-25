@@ -70,17 +70,50 @@
             console.log('circle:', circle);
             circle.style('transition', 'transform 1000ms linear');
 
-            function goLeft(){
-                // cmt.scale(2);
-                cmt.translate(70, 0);
-                circle.style('transform', cmt.getString());
-            }
+            // function goLeft(){
+            //     // cmt.scale(2);
+            //     cmt.translate(70, 0);
+            //     circle.style('transform', cmt.getString());
+            // }
+    
+            // function scale(){
+            //     // cmt.scale(2);
+            //     // cmt.translate(30, 0);
+            //     // circle.style('transform', 'scale(2)');
+            // }
 
-            function scale(){
-                // cmt.scale(2);
-                // cmt.translate(30, 0);
-                // circle.style('transform', 'scale(2)');
-            }
+            var pan;
+
+            $('circle').on('mousedown', function(){
+                pan = 1;
+            });
+
+            $('circle').on('mousemove', (function(){
+                var prevx, prevy;
+
+                return function(event){
+                    var x = event.clientX;
+                    var y = event.clientY;
+                    if(pan > 0){
+                        var dx = 0, dy = 0;
+                        if(prevx) dx = x - prevx;
+                        if(prevy) dy = y - prevy;
+
+                        cmt.translate(dx, dy);
+                        circle.style('transition', '');
+                        circle.style('transform', cmt.getString());
+                        prevx = x;
+                        prevy = y;
+                    }else{
+                        prevx = undefined;
+                        prevy = undefined;
+                    }
+                }
+            })());
+
+            $('circle').on('mouseup', function(){
+                pan = -1;
+            });
             
         </script>
     </body>

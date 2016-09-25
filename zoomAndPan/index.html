@@ -102,16 +102,66 @@
         <script type="text/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
         <script type="text/javascript" src="../node_modules/d3/build/d3.min.js"></script>
         <script type="text/javascript">
+
+            //SVGMatrix
+            function product(m1, m2){
+                var i, j;
+                var res = [[0, 0, 0], [0, 0, 0], [0, 0, 1]];
+
+                for(i = 0; i < 3; i++){
+                    for(j = 0; j < 3; ++j){
+                        res[i][j] = m1[i][0] * m2[0][j] +
+                                    m1[i][1] * m2[1][j] +
+                                    m1[i][2] * m2[2][j];
+                    }
+                }
+                return res;
+            }
+
+
+            function SVGMatrix(){
+                this.matrix = [[1, 0, 0], 
+                            [0, 1, 0], 
+                            [0, 0, 1]];
+            }
+
+            SVGMatrix.prototype.translate = function(x, y){
+                var m = [[1, 0, x],
+                        [0, 1, y],
+                        [0, 0, 1]]
+                this.matrix = product(this.matrix, m);
+                return this;
+            }
+
+            SVGMatrix.prototype.reset = function(){
+                this.matrix = [[1, 0, 0], 
+                               [0, 1, 0], 
+                               [0, 0, 1]];
+            }
+
+            SVGMatrix.prototype.scale = function(s){
+                var m = [[s, 0, 0],
+                        [0, s, 0],
+                        [0, 0, 1]]
+                this.matrix = product(this.matrix, m);
+                return this;
+            }
+
+            SVGMatrix.prototype.getString = function(){
+                var arr = [this.matrix[0][0], this.matrix[1][0], this.matrix[0][1], 
+                           this.matrix[1][1], this.matrix[0][2], this.matrix[1][2]];
+
+                return 'matrix('+arr.join(',')+')';
+            }
+            
+            var cmt = new SVGMatrix();
             var svg = d3.select('svg');
             svg.style('border', '2px solid black');
-
-            var world = svg.select('#world');
-
-            d3.select('#world').style('transition', 'transform 300ms linear');
 
             $('svg').on('dblclick', (function(){
                 var zoom = 1;
                 return function(event){
+                    d3.select('#world').style('transition', 'transform 300ms linear');
                     if(zoom > 0){
                         var target = event.currentTarget;
                         var rect = target.getBoundingClientRect();
@@ -123,27 +173,51 @@
                         var dy = y - rect.height/4;
                         dx = dx < 0 ? 0 : dx;
                         dy = dy < 0 ? 0 : dy;
-                        dx = -dx + 'px';
-                        dy = -dy + 'px';
-                        d3.select('#world').style('transform', 'scale(2) translate('+dx+', '+dy+')');
+                        dx = -dx;
+                        dy = -dy;
+
+                        cmt.scale(2.0);
+                        cmt.translate(dx, dy);
                     }else{
-                        d3.select('#world').style('transform', 'scale(1)');
+                        cmt.reset();
                     }
+                    d3.select('#world').style('transform', cmt.getString());
                     zoom *= -1;
                 }
             })());
 
-            var pan = false;
+            var pan = -1;
             
             $('svg').on('mousedown', function(){
-                pan = true;
+                pan = 1;
+            });
+
+            $('svg').on('mouseup', function(){
+                pan = -1;
             });
             
-            $('svg').on('mousemove', function(event){
-                if(pan){
-                    
+            $('svg').on('mousemove', (function(){
+                var prevx, prevy;
+
+                return function(event){
+                    var x = event.clientX;
+                    var y = event.clientY;
+                    if(pan > 0){
+                        var dx = 0, dy = 0;
+                        if(prevx) dx = x - prevx;
+                        if(prevy) dy = y - prevy;
+
+                        cmt.translate(dx, dy);
+                        d3.select('#world').style('transition', '');
+                        d3.select('#world').style('transform', cmt.getString());
+                        prevx = x;
+                        prevy = y;
+                    }else{
+                        prevx = undefined;
+                        prevy = undefined;
+                    }
                 }
-            });
+            })());
 
         </script>
     </body>
